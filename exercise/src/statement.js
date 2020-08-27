@@ -21,28 +21,39 @@ function calculateComedyAmount(perf) {
   return amount;
 }
 
+function calculateAmountPerPerformance(play, perf) {
+  let thisAmount = 0;
+  switch (play.type) {
+    case 'tragedy':
+      thisAmount = calculateTragedyAmount(perf);
+      break;
+    case 'comedy':
+      thisAmount = calculateComedyAmount(perf);
+      break;
+    default:
+      throw new Error(`unknown type: ${play.type}`);
+  }
+  return thisAmount;
+}
+
+function calculateCredits(play, perf) {
+  let thisCredits = 0;
+  thisCredits += Math.max(perf.audience - 30, 0);
+  if ('comedy' === play.type) {
+    thisCredits += Math.floor(perf.audience / 5);
+  }
+  return thisCredits;
+}
+
 function statement(invoice, plays) {
   let totalAmount = 0;
   let volumeCredits = 0;
   let result = `Statement for ${invoice.customer}\n`;
   for (let perf of invoice.performances) {
     const play = plays[perf.playID];
-    let thisAmount = 0;
-    switch (play.type) {
-      case 'tragedy':
-        thisAmount = calculateTragedyAmount(perf);
-        break;
-      case 'comedy':
-        thisAmount = calculateComedyAmount(perf);
-        break;
-      default:
-        throw new Error(`unknown type: ${play.type}`);
-    }
-    // add volume credits
-    volumeCredits += Math.max(perf.audience - 30, 0);
-    // add extra credit for every ten comedy attendees
-    if ('comedy' === play.type) volumeCredits += Math.floor(perf.audience / 5);
-    //print line for this order
+    let thisAmount = calculateAmountPerPerformance(play, perf);
+    volumeCredits += calculateCredits(play, perf);
+
     result += ` ${play.name}: ${format(thisAmount / 100)} (${perf.audience} seats)\n`;
     totalAmount += thisAmount;
   }
