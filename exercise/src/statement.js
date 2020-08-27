@@ -76,10 +76,18 @@ function statement(invoice, plays, printHTML) {
     let thisAmount = calculateAmountPerPerformance(play, perf);
     credits += calculateCredits(play, perf);
 
-    allColumnResult += getColumnResult(play.name, thisAmount, perf.audience);
+    if (printHTML) {
+      allColumnResult += getColumnHTMLResult(play.name, thisAmount, perf.audience);
+    } else {
+      allColumnResult += getColumnResult(play.name, thisAmount, perf.audience);
+    }
     totalAmount += thisAmount;
   }
-  return getResult(invoice.customer, allColumnResult, totalAmount, credits);
+  if (printHTML) {
+    return getHTMLResult(invoice.customer, allColumnResult, totalAmount, credits);
+  } else {
+    return getResult(invoice.customer, allColumnResult, totalAmount, credits);
+  }
 }
 
 module.exports = {
