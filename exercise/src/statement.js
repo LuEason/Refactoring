@@ -45,6 +45,10 @@ function getColumnResult(name, amount, audience) {
   return ` ${name}: ${format(amount / 100)} (${audience} seats)\n`;
 }
 
+function getColumnHTMLResult(name, amount, audience) {
+  return ` <tr><td>${name}</td><td>${audience}</td><td>${format(amount / 100)}</td></tr>\n`;
+}
+
 function getResult(customer, allColumnResult, totalAmount, credits) {
   let result = `Statement for ${customer}\n`;
   result += allColumnResult;
@@ -53,7 +57,17 @@ function getResult(customer, allColumnResult, totalAmount, credits) {
   return result;
 }
 
-function statement(invoice, plays) {
+function getHTMLResult(customer, allColumnResult, totalAmount, credits) {
+  let result = `<h1>Statement for ${customer}</h1>\n`;
+  result += '<table>\n' + '<tr><th>play</th><th>seats</th><th>cost</th></tr>';
+  result += allColumnResult;
+  result += '</table>\n' +
+    `<p>Amount owed is <em>${format(totalAmount / 100)}</em></p>\n` +
+    `<p>You earned <em>${credits}</em> credits</p>`;
+  return result;
+}
+
+function statement(invoice, plays, printHTML) {
   let totalAmount = 0;
   let credits = 0;
   let allColumnResult = '';
